@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from supabase import create_client, Client
+<<<<<<< HEAD
 import os
 from dotenv import load_dotenv
 from datetime import datetime, date
@@ -10,6 +11,10 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from streamlit_plotly_events import plotly_events
+=======
+from dotenv import load_dotenv
+import os
+>>>>>>> 542f39a3adb99525e245c8068e2b4c0ea7755f64
 
 # Page configuration - MUST be first Streamlit command
 st.set_page_config(
@@ -19,7 +24,10 @@ st.set_page_config(
 )
 
 # Load environment variables
+<<<<<<< HEAD
 from dotenv import load_dotenv
+=======
+>>>>>>> 542f39a3adb99525e245c8068e2b4c0ea7755f64
 load_dotenv()
 
 # Initialize Supabase
@@ -31,6 +39,7 @@ def init_supabase():
 
 supabase = init_supabase()
 
+<<<<<<< HEAD
 # Admin email - only this user can manage sites
 ADMIN_EMAIL = "megandaiger@gmail.com"  # Change this to your actual admin email
 
@@ -573,6 +582,8 @@ def manage_sites(is_user_admin):
     st.markdown("---")
     st.info("💾 **Database Integration Active:** Site changes are now saved permanently to the database!")
 
+=======
+>>>>>>> 542f39a3adb99525e245c8068e2b4c0ea7755f64
 def login():
     """Handle user login"""
     st.title("🔐 Login")
@@ -616,6 +627,7 @@ def signup():
 
 def view_data():
     """Public data view for volunteers"""
+<<<<<<< HEAD
     st.header("Water Quality Metrics Over Time")
     st.markdown("*Data collected by Citizen Scientists using CPW River Watch protocols*")
     
@@ -626,16 +638,23 @@ def view_data():
         is_user_admin = is_admin(user_email)
     
     
+=======
+    st.header("Water Quality Data")
+>>>>>>> 542f39a3adb99525e245c8068e2b4c0ea7755f64
     # Fetch and display data
     try:
         response = supabase.table('water_quality').select("*").order('date').execute()
         df = pd.DataFrame(response.data)
         
+<<<<<<< HEAD
         
+=======
+>>>>>>> 542f39a3adb99525e245c8068e2b4c0ea7755f64
         if not df.empty:
             # Convert date column to datetime
             df['date'] = pd.to_datetime(df['date'])
             
+<<<<<<< HEAD
             # Create abbreviated site names for legend using dynamic sites
             sites = get_sites()
             site_mapping = {full_name: short_name for full_name, short_name in sites}
@@ -647,6 +666,14 @@ def view_data():
             })
             df['site_abbrev'] = df['site'].map(site_mapping)
             
+=======
+            # Display data table
+            st.subheader("Raw Data")
+            st.dataframe(df, use_container_width=True)
+            
+            # Create visualizations for each parameter
+            st.header("Water Quality Metrics Over Time")
+>>>>>>> 542f39a3adb99525e245c8068e2b4c0ea7755f64
             
             # Define the parameters to plot
             parameters = [
@@ -655,6 +682,7 @@ def view_data():
                 ('hardness', 'Hardness (mg/L CaCO3)'),
                 ('alkalinity', 'Alkalinity (mg/L CaCO3)'),
                 ('ph', 'pH (S.U.s)'),
+<<<<<<< HEAD
                 ('temperature', 'Temperature (°C)'),
                 ('flow', 'Flow (cfs)')
             ]
@@ -776,6 +804,21 @@ def view_data():
                 st.write("---")
                 
         
+=======
+                ('temperature', 'Temperature'),
+                ('flow', 'Flow')
+            ]
+            
+            # Create a line chart for each parameter showing all three sites
+            for param_col, param_title in parameters:
+                if param_col in df.columns:
+                    fig = px.line(df, x='date', y=param_col, color='site', 
+                                title=f'{param_title} - All Sites',
+                                labels={'date': 'Date', param_col: param_title, 'site': 'Site'})
+                    fig.update_layout(height=400)
+                    st.plotly_chart(fig, use_container_width=True)
+                
+>>>>>>> 542f39a3adb99525e245c8068e2b4c0ea7755f64
         else:
             st.info("No water quality data available.")
             
@@ -784,6 +827,7 @@ def view_data():
 
 def dashboard():
     """Main dashboard view for authenticated users"""
+<<<<<<< HEAD
     # Create header bar with logo and title
     col1, col2 = st.columns([1, 4])
     with col1:
@@ -935,10 +979,27 @@ def dashboard():
             # Use the site and date from outside the form - no need to duplicate
             site = selected_site
             date = selected_date
+=======
+    st.title("💧 Water Quality Monitoring Dashboard")
+    
+    # Navigation
+    tab1, tab2 = st.tabs(["📊 View Data", "➕ Add New Data"])
+    
+    with tab1:
+        view_data()
+    
+    with tab2:
+        st.header("Add New Water Quality Data")
+        with st.form("water_quality_form"):
+            # Site selection
+            site = st.selectbox("Site", ["Site 1", "Site 2", "Site 3"])
+            date = st.date_input("Date")
+>>>>>>> 542f39a3adb99525e245c8068e2b4c0ea7755f64
             
             col1, col2 = st.columns(2)
             
             with col1:
+<<<<<<< HEAD
                 # Dissolved Oxygen (mg/L)
                 existing_do_mg = existing_data['dissolved_oxygen_mg'] if existing_data else None
                 col_input, col_checkbox = st.columns([3, 1])
@@ -1153,11 +1214,43 @@ def dashboard():
                             del st.session_state[key]
                     
                     # Refresh the page to show updated data
+=======
+                dissolved_oxygen_mg = st.number_input("Dissolved Oxygen (mg/L)", min_value=0.0, format="%.2f")
+                dissolved_oxygen_sat = st.number_input("Dissolved Oxygen (% saturation)", min_value=0.0, max_value=200.0, format="%.1f")
+                hardness = st.number_input("Hardness (mg/L CaCO3)", min_value=0.0, format="%.1f")
+                alkalinity = st.number_input("Alkalinity (mg/L CaCO3)", min_value=0.0, format="%.1f")
+                
+            with col2:
+                ph = st.number_input("pH (S.U.s)", min_value=0.0, max_value=14.0, step=0.1, format="%.1f")
+                temperature = st.number_input("Temperature", format="%.1f")
+                flow = st.number_input("Flow", format="%.2f")
+                notes = st.text_area("Notes")
+            
+            if st.form_submit_button("Submit Data"):
+                try:
+                    data = {
+                        'site': site,
+                        'date': str(date),
+                        'dissolved_oxygen_mg': dissolved_oxygen_mg,
+                        'dissolved_oxygen_sat': dissolved_oxygen_sat,
+                        'hardness': hardness,
+                        'alkalinity': alkalinity,
+                        'ph': ph,
+                        'temperature': temperature,
+                        'flow': flow,
+                        'notes': notes,
+                        'user_id': st.session_state['user'].user.id
+                    }
+                    
+                    supabase.table('water_quality').insert(data).execute()
+                    st.success("Data submitted successfully!")
+>>>>>>> 542f39a3adb99525e245c8068e2b4c0ea7755f64
                     st.rerun()
                     
                 except Exception as e:
                     st.error(f"Error submitting data: {str(e)}")
     
+<<<<<<< HEAD
     # Admin tab for data editing
     if is_user_admin:
         with tab3:
@@ -1269,6 +1362,8 @@ def dashboard():
             except:
                 st.info("No additional admins found in database.")
     
+=======
+>>>>>>> 542f39a3adb99525e245c8068e2b4c0ea7755f64
     # Logout button
     if st.sidebar.button("Logout"):
         if 'user' in st.session_state:
@@ -1277,6 +1372,7 @@ def dashboard():
 
 # Main app logic
 if 'user' not in st.session_state:
+<<<<<<< HEAD
     # Create header bar with logo and buttons
     col1, col2, col3 = st.columns([1, 3, 1])
     with col1:
@@ -1328,6 +1424,58 @@ if 'user' not in st.session_state:
             st.markdown("---")
             site_information()
             st.markdown("---")
+=======
+    # Show public view with login option in sidebar
+    st.title("💧 Water Quality Monitoring Dashboard")
+    
+    # Sidebar for login/signup
+    with st.sidebar:
+        st.header("🔐 Login")
+        
+        # Initialize show_signup if it doesn't exist
+        if 'show_signup' not in st.session_state:
+            st.session_state['show_signup'] = False
+        
+        if st.session_state['show_signup']:
+            st.subheader("Create Account")
+            email = st.text_input("Email", key="signup_email")
+            password = st.text_input("Password", type="password", key="signup_password")
+            confirm_password = st.text_input("Confirm Password", type="password", key="signup_confirm")
+            
+            if st.button("Sign Up"):
+                if password != confirm_password:
+                    st.error("Passwords don't match!")
+                else:
+                    try:
+                        user = supabase.auth.sign_up({"email": email, "password": password})
+                        st.success("Account created! Please login.")
+                        st.session_state['show_signup'] = False
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Error creating account: {str(e)}")
+            
+            if st.button("Back to Login"):
+                st.session_state['show_signup'] = False
+                st.rerun()
+        else:
+            email = st.text_input("Email", key="login_email")
+            password = st.text_input("Password", type="password", key="login_password")
+            
+            if st.button("Login"):
+                try:
+                    user = supabase.auth.sign_in_with_password({"email": email, "password": password})
+                    st.session_state['user'] = user
+                    st.rerun()
+                except Exception as e:
+                    st.error("Login failed. Please check your credentials.")
+            
+            if st.button("Create Account"):
+                st.session_state['show_signup'] = True
+                st.rerun()
+        
+        st.markdown("---")
+        st.info("💡 **Volunteers**: You can view all water quality data without logging in!")
+>>>>>>> 542f39a3adb99525e245c8068e2b4c0ea7755f64
     
     # Show public data view
     view_data()
